@@ -1,0 +1,5 @@
+variable,true_precedence,functional_form,true_lag,best_lag_classical,p_raw_min,p_lag_bonf,best_lag_bayes,bf10_bic_max,q_bh,rf_delta_mse_pct,rf_positive_fold_share,rf_shadow_q95,rf_detect,classical_detect,bayes_detect,classification
+x_linear,True,linear,1,1,2.3301981531088395e-17,4.660396306217679e-17,1,2.3538526683701997e+17,1.8641585224870716e-16,13.992219487154818,1.0,-0.5190317626724515,True,True,True,triangulated
+x_nonlinear,True,quadratic,1,2,0.3559933081930108,0.7119866163860216,1,0.05286232656211501,0.9493154885146954,7.94718408313504,1.0,0.44118081562776673,True,False,False,nonlinear-only; replicate before interpretation
+x_null,False,none,0,1,0.5329240481785031,1.0,1,0.04227496350634072,1.0,0.09507983967780229,0.6666666666666666,0.5061730131635247,False,False,False,no supported precedence
+x_common,False,common driver only,0,1,0.1410545595807093,0.2821091191614186,1,0.11595017328822702,0.5642182383228372,-1.5278007473832342,0.3333333333333333,-0.11026064041257339,False,False,False,no supported precedence

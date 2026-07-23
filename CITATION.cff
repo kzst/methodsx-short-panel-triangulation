@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite the associated MethodsX article when using this workflow."
+title: "methodsx-short-panel-triangulation"
+type: software
+authors:
+  - family-names: Kosztyán
+    given-names: Zsolt T.
+version: 1.0.0
+date-released: 2026-07-23
+repository-code: "https://github.com/kzst/methodsx-short-panel-triangulation"

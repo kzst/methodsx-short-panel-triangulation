@@ -1,0 +1,15 @@
+Package: methodsxshortpanel
+Type: Project
+Title: Triangulated Temporal-Precedence Analysis for Short Panels
+Version: 1.0.0
+Authors@R: person("Zsolt T.", "Kosztyán", role = c("aut", "cre"), email = "kosztyan.zsolt@gtk.uni-pannon.hu")
+Description: Reference scripts, synthetic data, and validation outputs for a MethodsX workflow that combines classical, Bayesian, and machine-learning evidence in short panels.
+License: MIT
+Encoding: UTF-8
+Imports:
+    yaml,
+    sandwich,
+    ranger,
+    forecast
+
+URL: https://github.com/kzst/methodsx-short-panel-triangulation

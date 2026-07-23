@@ -1,0 +1,19 @@
+# Default parameters for the MethodsX short-panel triangulation workflow
+seed: 20260723
+max_lag: 2
+alpha: 0.01
+fdr_q: 0.05
+bayes_factor_threshold: 5
+bayes_prior_scale: medium
+rf_trees: 500
+rf_shadow_repeats: 20
+rf_min_positive_fold_share: 0.67
+forecast_initial_window: 12
+forecast_horizon: 1
+imputation: none
+unit_effects: true
+# Choose ONE primary common-shock control. Full time effects are the default.
+time_effects: true
+cross_sectional_means: false
+cce_uses_lagged_leave_one_out_means: true
+placebo_repetitions: 200

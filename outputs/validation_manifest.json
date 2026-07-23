@@ -1,0 +1,11 @@
+{
+  "seed": 20260723,
+  "purpose": "Synthetic smoke tests for a short-panel temporal-precedence workflow",
+  "files": {
+    "demo_evidence.csv": "Classical, Bayesian-BIC, and blocked Random Forest evidence for planted linear, nonlinear, null, and common-driver predictors",
+    "common_driver_sensitivity.csv": "False-lead comparison before and after time/common-shock adjustment",
+    "simulation_summary.csv": "Detection rates from 100 replications per scenario and time length for classical two-way-within and Bayesian-BIC screens",
+    "simulation_replications.csv": "Replication-level simulation decisions"
+  },
+  "warning": "These are implementation smoke tests with deliberately visible signals, not universal power or size guarantees."
+}

@@ -1,0 +1,17 @@
+variable,true_precedence,functional_form,true_lag,dataset
+x_linear,True,linear,1,synthetic_mixed_panel.csv
+x_nonlinear,True,quadratic,1,synthetic_mixed_panel.csv
+x_null,False,none,0,synthetic_mixed_panel.csv
+x_common,False,common driver only,0,synthetic_mixed_panel.csv
+x_linear,False,none,0,synthetic_null_panel.csv
+x_nonlinear,False,none,0,synthetic_null_panel.csv
+x_null,False,none,0,synthetic_null_panel.csv
+x_common,False,common driver only,0,synthetic_null_panel.csv
+x_linear,False,none,0,synthetic_common_driver_panel.csv
+x_nonlinear,False,none,0,synthetic_common_driver_panel.csv
+x_null,False,none,0,synthetic_common_driver_panel.csv
+x_common,False,common driver only,0,synthetic_common_driver_panel.csv
+x_linear,True,linear,1,synthetic_structural_break_panel.csv
+x_nonlinear,False,none,0,synthetic_structural_break_panel.csv
+x_null,False,none,0,synthetic_structural_break_panel.csv
+x_common,False,common driver only,0,synthetic_structural_break_panel.csv
