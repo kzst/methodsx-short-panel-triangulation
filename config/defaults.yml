@@ -1,8 +1,11 @@
-# Default parameters for the MethodsX short-panel triangulation workflow
+# MethodsX R1 reference defaults.
 seed: 20260723
 max_lag: 2
+# Raw edge-level audit threshold; not the family-level multiplicity rule.
 alpha: 0.01
 fdr_q: 0.05
+multiplicity_primary: BY
+multiplicity_sensitivity: BH
 bayes_factor_threshold: 5
 bayes_prior_scale: medium
 rf_trees: 500
@@ -12,8 +15,8 @@ forecast_initial_window: 12
 forecast_horizon: 1
 imputation: none
 unit_effects: true
-# Choose ONE primary common-shock control. Full time effects are the default.
 time_effects: true
 cross_sectional_means: false
 cce_uses_lagged_leave_one_out_means: true
 placebo_repetitions: 200
+tier_linear_family_groups_classical_and_bayesian: true
