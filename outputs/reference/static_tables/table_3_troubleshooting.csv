@@ -1,0 +1,7 @@
+Symptom,Likely cause,Corrective action
+Every lag appears significant,"Trend, common shock, too many lags, or repeated threshold search.",Add time/common-factor controls; difference or detrend only with justification; inspect circular-shift null; reduce p_max.
+Random Forest finds many more links,"Flexible learner is exploiting leakage, chance importance, or unit labels.","Use forward folds, restricted-versus-full delta loss, circular-shift shadows, repeated seeds, and RF-only evidence tier."
+Bayes factors are extreme,"Scaling, near collinearity, tiny residual variance, or prior mismatch.",Standardize inside training data; inspect design rank; report uncapped log BF10 and prior sensitivity; treat any legacy cap as display-only.
+Results change after interpolation,The imputation model is contributing temporal structure.,"Make no-imputation analysis primary; compare complete case, linear, and state-space imputation; disclose affected cells."
+Pooled result conflicts with most units,Heterogeneity or a large unit is dominating.,"Report unit distribution, leave-one-unit-out results, and random-slope or group-specific analysis."
+Opposite directions are supported,"Feedback, common driver, temporal aggregation, or unstable lag.","Treat as bidirectional precedence; inspect cross-correlation, common factors, and temporal aggregation; avoid causal language."
