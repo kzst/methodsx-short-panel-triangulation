@@ -1,0 +1,9 @@
+Parameter,Operational rule,Default
+"Lag budget, p_max","1–2 when T < 30 is the default starting range; larger values require residual degrees of freedom, domain justification, and sensitivity analysis.",Primary: 2
+Frequentist threshold,"Store all lag-specific p-values; correct lag search within pair, then apply BY across the declared family. Report BH as sensitivity. alpha is raw/audit only.",alpha = 0.01 audit; BY q = 0.05 primary; BH q = 0.05 sensitivity
+Bayesian threshold,Report log BF10 directly and a decision threshold; repeat under wider/narrower priors. Avoid numerical capping of inferential output.,log BF10 >= log(5) = 1.609
+Random Forest validation,Forward/rolling-origin restricted-versus-full loss; repeated seeds; shadow-calibrated decision.,Production: 500 trees; >=3 folds; positive in >=2/3
+Shadow/surrogate null,Non-zero circular shifts preserve length and cyclic order; require non-wrapping block-permutation sensitivity at short T.,20 production shadows; 200 final placebos; block lengths 2–4 sensitivity
+Missing data,"No imputation by default. Any interpolation is internal only, does not extrapolate endpoints, and is paired with complete-case sensitivity.",none
+Common shocks,Choose one primary control: full time indicators or lagged leave-one-out cross-sectional averages. Do not enable both by default because the averages are functions of time.,time effects; CCE sensitivity
+Reproducibility,"Record seed, package versions, data hash, family map, exclusions, every threshold, surrogate design, and production vs Monte Carlo tuning.",fixed seed
