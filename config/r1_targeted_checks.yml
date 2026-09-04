@@ -1,0 +1,51 @@
+seed: 20260904
+base_config: config/r1_validation_full.yml
+source_output: outputs/R1
+output_dir: outputs/R1_targeted
+max_lag: 2
+fdr_q: 0.05
+alpha_levels: [0.01, 0.05]
+
+classical:
+  wild_bootstrap_reps: 199
+
+benchmarks:
+  pcmci: true
+  pcmci_tau_max: 2
+  pcmci_pc_alpha: 0.05
+
+benchmark_control:
+  replications: 300
+  T: [20, 30, 40]
+  N: 25
+  K: 10
+  phi_x: 0.50
+  phi_y: 0.50
+  cross_dependence: 0.00
+  linear_effect: 0.30
+  nonlinear_effect: 0.30
+  n_true_linear: 2
+  n_true_nonlinear: 2
+  correlated_predictor_blocks: true
+
+rf_fidelity:
+  replications: 30
+  T: 30
+  N: 25
+  K: 10
+  phi_x: 0.50
+  phi_y: 0.50
+  cross_dependence: 0.40
+  nonlinear_effect: 0.30
+  fold_share_threshold: 0.67
+  seed_repeats: 3
+  settings:
+    - {name: mc_30_19, trees: 30, shadows: 19}
+    - {name: mid_100_19, trees: 100, shadows: 19}
+    - {name: submitted_500_20, trees: 500, shadows: 20}
+  reference_setting: submitted_500_20
+
+gates:
+  jks_max_global_null_fpr: 0.10
+  rf_min_majority_agreement_with_reference: 0.85
+  rf_max_decision_rate_abs_diff: 0.15
