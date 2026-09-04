@@ -1,0 +1,6 @@
+Specification,Details
+Subject area,"Economics, Econometrics and Finance"
+More specific subject area,Short-panel time-series analysis; high-dimensional temporal dependence; network-derived elasticities
+Name of your method,Triangulated short-panel temporal precedence workflow
+Name and reference of original method,"Granger temporal precedence [1]; panel Granger testing [2,25]; Bayesian model comparison [9,10]; Random Forest/shadow calibration [6–8]; rolling-origin validation [11,12]; dependence-robust FDR [27]; PCMCI-ParCorr benchmark [26]"
+Resource availability,Live public repository: https://github.com/kzst/methodsx-short-panel-triangulation. The submission archive mirrors the reference implementation and R1 validation documentation. The complete empirical application is maintained separately in the GRAV_PAPER project.
