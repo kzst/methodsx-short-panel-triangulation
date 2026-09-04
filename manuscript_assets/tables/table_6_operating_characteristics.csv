@@ -1,0 +1,9 @@
+Scenario,Triangulated FDP,Triangulated power,Replicated-SF FDP,Replicated-SF power
+"Global null: T20, N25, K4",0.05%,—,2.70%,—
+"Global null: T30, N25, K4",0.00%,—,1.25%,—
+"Global null: T40, N25, K4",0.00%,—,1.05%,—
+"Partial null: T20, N25, K6",0.10%,1.93%,1.72%,30.83%
+"Partial null: T30, N25, K6",0.10%,2.98%,1.10%,37.48%
+"Partial null: T40, N25, K6",0.10%,3.20%,1.17%,41.98%
+"Partial null: T30, N25, K30",0.00%,1.75%,4.50%,34.75%
+"Partial null: T30, N25, K60",0.00%,1.00%,7.83%,36.00%
