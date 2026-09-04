@@ -1,0 +1,10 @@
+Method,T,Global-null FPR,Partial-null linear power,Partial-null nonlinear power,Partial-null empirical FDR
+Dumitrescu–Hurlin,20,1.77%,20.00%,2.50%,7.67%
+Dumitrescu–Hurlin,30,0.97%,45.17%,4.17%,4.36%
+Dumitrescu–Hurlin,40,1.10%,70.17%,3.00%,3.39%
+Split-panel jackknife,20,0.73%,54.17%,2.67%,3.72%
+Split-panel jackknife,30,0.90%,92.33%,4.17%,2.47%
+Split-panel jackknife,40,1.03%,99.17%,4.17%,4.96%
+PCMCI-ParCorr,20,0.17%,57.83%,0.17%,0.61%
+PCMCI-ParCorr,30,0.17%,88.33%,0.50%,0.44%
+PCMCI-ParCorr,40,0.13%,97.83%,0.67%,1.00%
