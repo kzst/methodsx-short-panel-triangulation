@@ -1,0 +1,102 @@
+# FINAL PRE-MANUSCRIPT R1 validation configuration
+# MEX-D-26-01639. Freeze this file before the full run.
+seed: 20260903
+alpha: 0.01
+fdr_q: 0.05
+max_lag: 2
+
+replications:
+  primary_global_null: 2000
+  primary_partial_null: 1000
+  stress_general: 50
+  stress_high_k: 100
+  power_curve: 100
+  null_calibration_outer: 150
+  tuning: 20
+  benchmark: 150
+
+anchor:
+  T: 30
+  N: 25
+  K: 10
+  phi_x: 0.50
+  phi_y: 0.50
+  cross_dependence: 0.40
+  linear_effect: 0.30
+  nonlinear_effect: 0.30
+  n_true_linear: 2
+  n_true_nonlinear: 2
+  correlated_predictor_blocks: true
+
+sweeps:
+  T: [20, 30, 40]
+  N: [10, 25, 50]
+  K: [10, 30, 60]
+  phi_x: [0.20, 0.50, 0.80]
+  phi_y: [0.20, 0.50, 0.80]
+  cross_dependence: [0.00, 0.40, 0.80]
+  linear_effect: [0.10, 0.20, 0.30, 0.50]
+  nonlinear_effect: [0.10, 0.20, 0.30, 0.50]
+
+classical:
+  covariance: cluster
+  lag_search_correction: bonferroni
+  multiplicity_primary_candidate: BY
+  multiplicity_sensitivity: BH
+  hpj_bootstrap_reps: 199
+
+bayesian:
+  log_bf_threshold: 1.6094379124341003
+
+rf:
+  trees_mc: 30
+  trees_reference: 500
+  shadow_repeats_mc: 19
+  shadow_repeats_reference: 20
+  positive_fold_share: 0.67
+  forward_fractions: [0.50, 0.65, 0.80]
+  horizon: 1
+  min_train_times: 8
+  max_depth: 6
+  min_node_size: 5
+  tuning_fold_share: [0.50, 0.67, 0.80]
+  tuning_settings:
+    - {name: mc_default, trees: 30, shadows: 19, seed_repeats: 3}
+    - {name: more_trees, trees: 100, shadows: 19, seed_repeats: 1}
+    - {name: submitted_reference, trees: 500, shadows: 20, seed_repeats: 1}
+    - {name: fewer_shadows, trees: 30, shadows: 9, seed_repeats: 1}
+    - {name: more_shadows, trees: 30, shadows: 39, seed_repeats: 1}
+
+tiering:
+  minimum_replications: 2
+  placebo_quantile: 0.95
+  placebo_repeats: 19
+  require_sensitivity_for_top_tier: true
+  compare_grouped_linear_family: true
+
+null_calibration:
+  compare_circular_shift: true
+  compare_nonwrapping_block_surrogate: true
+  block_lengths: [2, 3, 4]
+
+benchmarks:
+  dumitrescu_hurlin: true
+  jks_hpj: true
+  pcmci: true
+  pcmci_tau_max: 2
+  pcmci_pc_alpha: 0.05
+
+generated_regressor:
+  mode: limitation
+  run_optional_two_stage_bootstrap: false
+
+execution:
+  auto_install_r_packages: true
+  auto_install_python_packages: true
+  workers: auto
+  checkpoint_dir: outputs/R1/checkpoints
+  output_dir: outputs/R1
+  overwrite_completed_stage: false
+  stop_on_failed_validation_gate: false
+  save_replication_level_outputs: true
+  write_session_info: true
