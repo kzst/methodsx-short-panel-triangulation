@@ -1,0 +1,4 @@
+Specification,Lag-adjusted p,log BF10 (BIC approximation)
+unit fixed effects only,9.6e-13,>=40.00
+unit and time fixed effects,0.524,-2.54
+unit effects plus lagged cross-sectional averages,0.984,-3.01
