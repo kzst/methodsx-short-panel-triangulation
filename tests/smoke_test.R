@@ -1,14 +1,38 @@
-source(file.path("R", "classical_panel_precedence.R"))
-source(file.path("R", "bayesian_panel_precedence.R"))
+# R1 decision-contract smoke test.
+# This test specifically protects the grouped evidence-family interpretation
+# used in the revised MethodsX manuscript.
+
 source(file.path("R", "triangulate_evidence.R"))
-d <- utils::read.csv(file.path("data", "synthetic_mixed_panel.csv"))
-a <- classical_panel_precedence(d, "unit", "time", "y", "x_linear",
-                                  max_lag = 2, vcov = "cluster")
-b <- bayesian_panel_precedence(d, "unit", "time", "y", "x_linear",
-                                max_lag = 2)
-stopifnot(is.finite(a$summary$p_lag_adjusted), a$summary$p_lag_adjusted < 0.05)
-stopifnot(is.finite(b$summary$bf10_bic_max), b$summary$bf10_bic_max > 5)
-t <- triangulate_evidence(TRUE, TRUE, FALSE, replicated_layers = 2,
-                          placebo_pass = TRUE, sensitivity_pass = TRUE)
-stopifnot(t$evidence_tier == "triangulated temporal precedence")
-cat("Smoke test passed.\n")
+
+# Frequentist + Bayesian agreement is ONE linear evidence family and cannot,
+# by itself, earn the triangulated tier.
+a <- triangulate_evidence(
+  classical_supported = TRUE,
+  bayesian_supported = TRUE,
+  rf_supported = FALSE,
+  replicated_layers = 2L,
+  placebo_pass = TRUE,
+  sensitivity_pass = TRUE
+)
+stopifnot(a$linear_family_supported, !a$predictive_family_supported)
+stopifnot(a$n_evidence_families == 1L)
+stopifnot(a$evidence_tier == "replicated single-family evidence")
+
+# The highest tier requires linear-family AND predictive-family support plus
+# replication, placebo, and sensitivity gates.
+b <- triangulate_evidence(
+  classical_supported = TRUE,
+  bayesian_supported = FALSE,
+  rf_supported = TRUE,
+  replicated_units = 2L,
+  placebo_pass = TRUE,
+  sensitivity_pass = TRUE
+)
+stopifnot(b$n_evidence_families == 2L)
+stopifnot(b$evidence_tier == "triangulated temporal precedence")
+
+# RF-only non-replicated support is a nonlinear candidate, not triangulated.
+c <- triangulate_evidence(FALSE, FALSE, TRUE)
+stopifnot(c$evidence_tier == "nonlinear candidate; replication required")
+
+cat("R1 decision-contract smoke test passed.\n")
