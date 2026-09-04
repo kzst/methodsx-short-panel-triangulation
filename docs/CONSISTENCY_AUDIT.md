@@ -34,4 +34,4 @@ plus replication, placebo, and sensitivity gates for the highest tier.
 
 ## Figures
 
-Figures 1–2 are rebuilt from the same frozen fixed-diagnostic summaries used by the manuscript. Figure 3 is rebuilt from the grouped-family R1 operating-characteristic cells. The generated figures reproduce the displayed quantities and labels; the manuscript-facing PNGs are committed in this same R1 branch for direct comparison.
+Figures 1–2 are rebuilt from the same frozen fixed-diagnostic summaries used by the manuscript. Figure 3 is rebuilt from the grouped-family R1 operating-characteristic cells. Running `Rscript run_reproducibility.R --mode=assets` regenerates all three PNGs under `manuscript_assets/figures/` from the audited data committed in this R1 branch.
