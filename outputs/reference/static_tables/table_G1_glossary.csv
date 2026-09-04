@@ -1,0 +1,9 @@
+Term,Operational definition
+Short panel,Repeated units observed at relatively few ordered time points; adding units does not create additional temporal transitions.
+Temporal precedence,Evidence that past x improves the explanation or forward prediction of y after conditioning on past y and declared controls.
+Structural causality,A causal interpretation supported by an identification design and assumptions beyond predictive lead-lag evidence.
+Lag budget,The prespecified maximum set of delays examined for each direction and predictor-outcome pair.
+Surrogate or placebo series,A transformed series that preserves selected marginal or serial properties while breaking the original temporal alignment.
+Shadow predictor,A randomized or circularly shifted copy used as a negative-control benchmark for machine-learning importance or predictive gain.
+BF10,Bayes factor comparing the unrestricted model with the restricted model; values above one favor the unrestricted information set.
+Evidence triangulation,"Corroboration across empirically distinct evidence families: one linear-model family (frequentist and/or Bayesian) and one nonlinear/predictive Random Forest family, plus replication and sensitivity gates."
