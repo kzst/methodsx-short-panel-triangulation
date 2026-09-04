@@ -1,0 +1,9 @@
+scenario,T,N,K,triangulated_fdp,triangulated_power,replicated_single_family_fdp,replicated_single_family_power
+Global null,20,25,4,0.0005,,0.027,
+Global null,30,25,4,0.0,,0.0125,
+Global null,40,25,4,0.0,,0.0105,
+Partial null,20,25,6,0.001,0.01925,0.0171666666666667,0.30825
+Partial null,30,25,6,0.001,0.02975,0.011,0.37475
+Partial null,40,25,6,0.001,0.032,0.0116666666666667,0.41975
+Partial null,30,25,30,0.0,0.0175,0.045,0.3475
+Partial null,30,25,60,0.0,0.01,0.0783333333333333,0.36
