@@ -57,9 +57,6 @@ panel_cross_sectional_mean <- function(x, time) {
 }
 
 panel_cross_sectional_mean_loo <- function(x, time, id) {
-  # Time-specific cross-sectional mean excluding the current unit. The input
-  # should already be lagged, so this control uses only information available
-  # before the outcome date and avoids mechanically inserting the unit's own lag.
   x <- as.numeric(x)
   total <- ave(x, time, FUN = function(z) sum(z, na.rm = TRUE))
   count <- ave(is.finite(x), time, FUN = function(z) sum(z, na.rm = TRUE))
@@ -73,21 +70,14 @@ panel_cross_sectional_mean_loo <- function(x, time, id) {
 
 add_lagged_cross_sectional_means <- function(data, time, id, lag_columns) {
   for (nm in lag_columns) {
-    data[[paste0("mean_", nm)]] <- panel_cross_sectional_mean_loo(
-      data[[nm]], data[[time]], data[[id]]
-    )
+    data[[paste0("mean_", nm)]] <- panel_cross_sectional_mean_loo(data[[nm]], data[[time]], data[[id]])
   }
   data
 }
 
 resolve_common_shock_controls <- function(time_effects, cross_sectional_means) {
   if (isTRUE(time_effects) && isTRUE(cross_sectional_means)) {
-    warning(
-      "Saturated time fixed effects span time-only cross-sectional means. ",
-      "The cross-sectional means are omitted here; rerun with time_effects = FALSE ",
-      "for a separate CCE-style sensitivity specification.",
-      call. = FALSE
-    )
+    warning("Saturated time fixed effects span time-only cross-sectional means. The cross-sectional means are omitted here; rerun with time_effects = FALSE for a separate CCE-style sensitivity specification.", call. = FALSE)
     return(list(time_effects = TRUE, cross_sectional_means = FALSE, mode = "time fixed effects"))
   }
   if (isTRUE(time_effects)) return(list(time_effects = TRUE, cross_sectional_means = FALSE, mode = "time fixed effects"))
@@ -97,8 +87,7 @@ resolve_common_shock_controls <- function(time_effects, cross_sectional_means) {
 
 within_two_way <- function(x, id, time) {
   x <- as.numeric(x)
-  x - ave(x, id, FUN = function(z) mean(z, na.rm = TRUE)) -
-    ave(x, time, FUN = function(z) mean(z, na.rm = TRUE)) + mean(x, na.rm = TRUE)
+  x - ave(x, id, FUN = function(z) mean(z, na.rm = TRUE)) - ave(x, time, FUN = function(z) mean(z, na.rm = TRUE)) + mean(x, na.rm = TRUE)
 }
 
 unit_sign_stability <- function(x, y, id, pooled_sign) {
@@ -115,25 +104,35 @@ unit_sign_stability <- function(x, y, id, pooled_sign) {
   mean(signs[valid] == sign(pooled_sign))
 }
 
-bh_adjust_families <- function(table, p_col = "p_lag_adjusted", family_cols = c("outcome", "direction")) {
+adjust_families <- function(table, p_col = "p_lag_adjusted", family_cols = c("outcome", "direction"), method = c("BY", "BH")) {
+  method <- match.arg(method)
   if (!p_col %in% names(table)) stop("p_col not found")
   missing_family <- setdiff(family_cols, names(table))
   if (length(missing_family)) stop("Missing family columns: ", paste(missing_family, collapse = ", "))
+  out_col <- paste0("q_", tolower(method))
+  adjust_one <- function(p) {
+    q <- rep(NA_real_, length(p)); ok <- is.finite(p)
+    if (any(ok)) q[ok] <- stats::p.adjust(p[ok], method = method)
+    q
+  }
   if (!length(family_cols)) {
-    table$q_bh <- stats::p.adjust(table[[p_col]], method = "BH")
+    table[[out_col]] <- adjust_one(table[[p_col]])
     return(table)
   }
   interaction_key <- interaction(table[family_cols], drop = TRUE, lex.order = TRUE)
-  table$q_bh <- ave(table[[p_col]], interaction_key, FUN = function(p) {
-    q <- rep(NA_real_, length(p)); ok <- is.finite(p)
-    q[ok] <- stats::p.adjust(p[ok], method = "BH"); q
-  })
+  table[[out_col]] <- ave(table[[p_col]], interaction_key, FUN = adjust_one)
   table
 }
 
+by_adjust_families <- function(table, p_col = "p_lag_adjusted", family_cols = c("outcome", "direction")) {
+  adjust_families(table, p_col = p_col, family_cols = family_cols, method = "BY")
+}
+
+bh_adjust_families <- function(table, p_col = "p_lag_adjusted", family_cols = c("outcome", "direction")) {
+  adjust_families(table, p_col = p_col, family_cols = family_cols, method = "BH")
+}
+
 read_defaults <- function(path = file.path("config", "defaults.yml")) {
-  if (!requireNamespace("yaml", quietly = TRUE)) {
-    stop("Package 'yaml' is required to read the configuration file.")
-  }
+  if (!requireNamespace("yaml", quietly = TRUE)) stop("Package 'yaml' is required to read the configuration file.")
   yaml::read_yaml(path)
 }
