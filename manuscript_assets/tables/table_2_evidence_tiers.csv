@@ -1,0 +1,6 @@
+Evidence tier,Minimum condition,Reporting action
+Unsupported,No calibrated method supports the edge.,Do not display as a discovered relation.
+Exploratory,One method supports the edge in one unit or one specification.,Retain in an audit table; do not emphasize.
+Nonlinear candidate,Random Forest predictive family is supported while the linear-model family is not; shadow and forward-fold criteria pass.,Require replication and seed/tuning stability before emphasis; do not call it triangulated.
+Replicated single-family evidence,Exactly one evidence family (linear-model or nonlinear/predictive) supports the edge and the direction replicates in >=2 units or independent layers.,"Report as non-confirmatory, family-specific evidence with its unresolved alternatives."
+Triangulated temporal precedence,"Linear-model family (classical and/or Bayesian) AND nonlinear/predictive RF family support the edge; replication, placebo, and sensitivity gates pass.","Report as conservative temporal precedence, not structural causation; accompany with empirical FDP/power calibration."
