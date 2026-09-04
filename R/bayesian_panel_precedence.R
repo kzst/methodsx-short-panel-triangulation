@@ -1,6 +1,7 @@
 # Bayesian restricted-versus-unrestricted comparison for short panels.
-# BIC Bayes-factor approximation is the portable default. Every candidate lag
-# is reported, and prior/model sensitivity is required for substantive use.
+# The portable default uses the BIC Bayes-factor approximation. R1 stores the
+# evidence on the log scale without numerical clipping; BF10 is derived only
+# as a convenience field and can legitimately be Inf for overwhelming support.
 
 source(file.path("R", "utils.R"))
 
@@ -37,8 +38,7 @@ bayesian_panel_precedence <- function(data, id, time, outcome, predictor,
     if (unit_effects) controls <- c(controls, sprintf("factor(%s)", id))
     if (time_effects) controls <- c(controls, sprintf("factor(%s)", time))
     if (nrow(z) <= length(lag_y) + length(lag_x) + length(cs_cols) + 4L) {
-      rows[[lag]] <- data.frame(lag = lag, bic_restricted = NA_real_,
-                                bic_unrestricted = NA_real_, bf10_bic = NA_real_)
+      rows[[lag]] <- data.frame(lag = lag, bic_restricted = NA_real_, bic_unrestricted = NA_real_, log_bf10_bic = NA_real_, bf10_bic = NA_real_)
       next
     }
     f0 <- stats::as.formula(paste(outcome, "~", paste(c(lag_y, controls), collapse = " + ")))
@@ -47,25 +47,19 @@ bayesian_panel_precedence <- function(data, id, time, outcome, predictor,
     m1 <- stats::lm(f1, data = z)
     b0 <- stats::BIC(m0)
     b1 <- stats::BIC(m1)
-    bf <- exp(pmin(40, pmax(-40, (b0 - b1) / 2)))
-    rows[[lag]] <- data.frame(lag = lag, bic_restricted = b0,
-                              bic_unrestricted = b1, bf10_bic = bf)
+    log_bf <- (b0 - b1) / 2
+    bf <- if (is.finite(log_bf) && log_bf <= log(.Machine$double.xmax)) exp(log_bf) else if (is.finite(log_bf) && log_bf > 0) Inf else NA_real_
+    rows[[lag]] <- data.frame(lag = lag, bic_restricted = b0, bic_unrestricted = b1, log_bf10_bic = log_bf, bf10_bic = bf)
   }
 
   lag_table <- do.call(rbind, rows)
-  if (!any(is.finite(lag_table$bf10_bic))) {
-    best_lag <- NA_integer_
-    bf_max <- NA_real_
+  if (!any(is.finite(lag_table$log_bf10_bic))) {
+    best_lag <- NA_integer_; log_bf_max <- NA_real_; bf_max <- NA_real_
   } else {
-    best_lag <- lag_table$lag[which.max(replace(lag_table$bf10_bic,
-                                                !is.finite(lag_table$bf10_bic), -Inf))]
-    bf_max <- max(lag_table$bf10_bic, na.rm = TRUE)
+    best_lag <- lag_table$lag[which.max(replace(lag_table$log_bf10_bic, !is.finite(lag_table$log_bf10_bic), -Inf))]
+    log_bf_max <- max(lag_table$log_bf10_bic, na.rm = TRUE)
+    bf_max <- if (log_bf_max <= log(.Machine$double.xmax)) exp(log_bf_max) else Inf
   }
-  list(
-    summary = data.frame(outcome = outcome, predictor = predictor,
-                         best_lag = best_lag, bf10_bic_max = bf_max,
-                         supported = is.finite(bf_max) && bf_max >= bf_threshold,
-                         stringsAsFactors = FALSE),
-    lag_table = lag_table
-  )
+  threshold_log <- log(bf_threshold)
+  list(summary = data.frame(outcome = outcome, predictor = predictor, best_lag = best_lag, log_bf10_bic_max = log_bf_max, bf10_bic_max = bf_max, supported = is.finite(log_bf_max) && log_bf_max >= threshold_log, stringsAsFactors = FALSE), lag_table = lag_table)
 }
