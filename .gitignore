@@ -5,3 +5,9 @@ __pycache__/
 *.pyc
 outputs/runtime_*
 outputs/*.rds
+# Full reviewer-validation outputs are regenerated locally. Small audited
+# manuscript-facing extracts are versioned under outputs/reference/.
+outputs/R1/
+outputs/R1_targeted/
+outputs/R1_preflight/
+manuscript_assets/figures/
