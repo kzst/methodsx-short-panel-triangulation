@@ -1,4 +1,0 @@
-variable,best_lag_classical,p_raw_min,p_lag_bonf,best_lag_bayes,bf10_bic_max,q_bh,specification
-x_common,1,4.800072704683449e-13,9.600145409366897e-13,1,2.3538526683701997e+17,9.600145409366897e-13,unit fixed effects only
-x_common,1,0.2619294336420003,0.5238588672840006,1,0.07886089356422891,0.5238588672840006,unit and time fixed effects
-x_common,1,0.492204065862293,0.984408131724586,1,0.04945052260435846,0.984408131724586,unit effects plus lagged cross-sectional averages
