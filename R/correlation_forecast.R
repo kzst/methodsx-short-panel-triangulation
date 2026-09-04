@@ -32,6 +32,9 @@ panel_correlation_screen <- function(data, id, time, variables,
                stringsAsFactors = FALSE)
   })
   tab <- do.call(rbind, out)
+  # BY is the R1 primary multiplicity rule because arbitrary dependence among
+  # tested pairs is allowed; BH is retained as a sensitivity result.
+  tab$q_by <- stats::p.adjust(tab$p_surrogate, method = "BY")
   tab$q_bh <- stats::p.adjust(tab$p_surrogate, method = "BH")
   tab
 }
