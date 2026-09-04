@@ -1,0 +1,7 @@
+scenario,T,phi_classical_by_bayes
+Global null,20,0.494135429419235
+Global null,30,0.468975625266599
+Global null,40,0.391635062932511
+Partial null,20,0.780445965978190
+Partial null,30,0.876627777443946
+Partial null,40,0.905988197627224
