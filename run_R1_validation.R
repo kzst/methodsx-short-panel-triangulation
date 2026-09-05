@@ -1,7 +1,12 @@
 #!/usr/bin/env Rscript
 # One-launch R1 validation driver for MEX-D-26-01639.
+# Package revision: R1-repro-20260905-02
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
+`%||%` <- function(x, y) {
+  if (is.null(x)) return(y)
+  x
+}
+
 args <- commandArgs(trailingOnly = TRUE)
 
 parse_args <- function(args) {
@@ -12,41 +17,74 @@ parse_args <- function(args) {
     out = NULL,
     skip_install = FALSE
   )
+
   i <- 1L
   while (i <= length(args)) {
     a <- args[[i]]
+    handled <- FALSE
+
     if (grepl("^--mode=", a)) {
       out$mode <- sub("^--mode=", "", a)
-    } else if (a == "--mode" && i < length(args)) {
+      handled <- TRUE
+    }
+    if (!handled && identical(a, "--mode")) {
+      if (i >= length(args)) stop("Missing value after --mode")
       i <- i + 1L
       out$mode <- args[[i]]
-    } else if (grepl("^--config=", a)) {
+      handled <- TRUE
+    }
+
+    if (!handled && grepl("^--config=", a)) {
       out$config <- sub("^--config=", "", a)
-    } else if (a == "--config" && i < length(args)) {
+      handled <- TRUE
+    }
+    if (!handled && identical(a, "--config")) {
+      if (i >= length(args)) stop("Missing value after --config")
       i <- i + 1L
       out$config <- args[[i]]
-    } else if (grepl("^--workers=", a)) {
+      handled <- TRUE
+    }
+
+    if (!handled && grepl("^--workers=", a)) {
       out$workers <- sub("^--workers=", "", a)
-    } else if (a == "--workers" && i < length(args)) {
+      handled <- TRUE
+    }
+    if (!handled && identical(a, "--workers")) {
+      if (i >= length(args)) stop("Missing value after --workers")
       i <- i + 1L
       out$workers <- args[[i]]
-    } else if (grepl("^--out=", a)) {
+      handled <- TRUE
+    }
+
+    if (!handled && grepl("^--out=", a)) {
       out$out <- sub("^--out=", "", a)
-    } else if (a == "--out" && i < length(args)) {
+      handled <- TRUE
+    }
+    if (!handled && identical(a, "--out")) {
+      if (i >= length(args)) stop("Missing value after --out")
       i <- i + 1L
       out$out <- args[[i]]
-    } else if (a == "--skip-install") {
-      out$skip_install <- TRUE
-    } else {
-      stop("Unknown argument: ", a)
+      handled <- TRUE
     }
+
+    if (!handled && identical(a, "--skip-install")) {
+      out$skip_install <- TRUE
+      handled <- TRUE
+    }
+
+    if (!handled) stop("Unknown argument: ", a)
     i <- i + 1L
   }
+
   out
 }
 
 opt <- parse_args(args)
+if (!opt$mode %in% c("full", "smoke")) {
+  stop("--mode must be full or smoke for run_R1_validation.R")
+}
 if (!file.exists(opt$config)) stop("Configuration file not found: ", opt$config)
+
 if (!requireNamespace("yaml", quietly = TRUE)) {
   if (opt$skip_install) stop("R package 'yaml' is required.")
   install.packages("yaml", repos = "https://cloud.r-project.org")
@@ -71,11 +109,16 @@ run_cmd <- function(command, args = character(), label = command) {
   invisible(status)
 }
 
+message("R1 validation driver revision: R1-repro-20260905-02")
+
 workers <- opt$workers
-if (is.null(workers) || identical(workers, "auto")) {
+auto_workers <- is.null(workers) || identical(tolower(as.character(workers)), "auto")
+if (auto_workers) {
   workers <- max(1L, parallel::detectCores(logical = TRUE) - 1L)
-} else {
-  workers <- max(1L, as.integer(workers))
+}
+if (!auto_workers) {
+  workers <- suppressWarnings(as.integer(workers))
+  if (!is.finite(workers) || workers < 1L) stop("--workers must be a positive integer or 'auto'")
 }
 
 log_msg("Configuration: ", normalizePath(opt$config, mustWork = TRUE))
@@ -85,13 +128,16 @@ Sys.setenv(OMP_NUM_THREADS = "1", OPENBLAS_NUM_THREADS = "1", MKL_NUM_THREADS = 
 required_r <- c("yaml", "plm", "MASS", "ranger", "sandwich", "lmtest")
 missing_r <- required_r[!vapply(required_r, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing_r)) {
-  if (isTRUE(cfg$execution$auto_install_r_packages) && !opt$skip_install) {
+  can_install_r <- isTRUE(cfg$execution$auto_install_r_packages) && !opt$skip_install
+  if (can_install_r) {
     log_msg("Installing missing R packages: ", paste(missing_r, collapse = ", "))
     install.packages(missing_r, repos = "https://cloud.r-project.org", dependencies = TRUE)
-  } else {
+  }
+  if (!can_install_r) {
     stop("Missing R packages: ", paste(missing_r, collapse = ", "))
   }
 }
+
 missing_r <- required_r[!vapply(required_r, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing_r)) stop("R dependency installation incomplete: ", paste(missing_r, collapse = ", "))
 
@@ -113,10 +159,9 @@ venv_dir <- Sys.getenv(
 )
 venv_dir <- path.expand(venv_dir)
 dir.create(dirname(venv_dir), recursive = TRUE, showWarnings = FALSE)
-venv_python <- if (.Platform$OS.type == "windows") {
-  file.path(venv_dir, "Scripts", "python.exe")
-} else {
-  file.path(venv_dir, "bin", "python")
+venv_python <- file.path(venv_dir, "bin", "python")
+if (.Platform$OS.type == "windows") {
+  venv_python <- file.path(venv_dir, "Scripts", "python.exe")
 }
 
 if (!file.exists(venv_python)) {
@@ -143,10 +188,11 @@ run_cmd(python, c("-c", shQuote(venv_check)), "verify Python R1 virtual environm
 Sys.setenv(PIP_REQUIRE_VIRTUALENV = "true")
 run_cmd(python, c("-m", "pip", "--version"), "R1 virtualenv pip check")
 
-python_check <- paste(
-  "import numpy,pandas,scipy,statsmodels,sklearn,yaml;",
-  if (isTRUE(cfg$benchmarks$pcmci)) "import tigramite" else "pass"
-)
+python_check <- "import numpy,pandas,scipy,statsmodels,sklearn,yaml"
+if (isTRUE(cfg$benchmarks$pcmci)) {
+  python_check <- paste(python_check, "import tigramite", sep = ";")
+}
+
 py_ok <- system2(
   python,
   c("-c", shQuote(python_check)),
@@ -155,16 +201,19 @@ py_ok <- system2(
 ) == 0L
 
 if (!py_ok) {
-  if (isTRUE(cfg$execution$auto_install_python_packages) && !opt$skip_install) {
+  can_install_python <- isTRUE(cfg$execution$auto_install_python_packages) && !opt$skip_install
+  if (can_install_python) {
     run_cmd(
       python,
       c("-m", "pip", "install", "-r", "python/requirements_R1.txt"),
       "install Python R1 dependencies in isolated virtual environment"
     )
-  } else {
+  }
+  if (!can_install_python) {
     stop("Missing Python dependencies in the isolated R1 virtual environment. See python/requirements_R1.txt")
   }
 }
+
 run_cmd(python, c("-c", shQuote(python_check)), "Python dependency preflight")
 writeLines(capture.output(sessionInfo()), file.path(out_dir, "sessionInfo_R1.txt"))
 run_cmd(python, c("--version"), "Python version check")
@@ -275,14 +324,16 @@ completion <- list(
   python_venv = normalizePath(venv_dir, mustWork = TRUE)
 )
 
-if (requireNamespace("jsonlite", quietly = TRUE)) {
+has_jsonlite <- requireNamespace("jsonlite", quietly = TRUE)
+if (has_jsonlite) {
   jsonlite::write_json(
     completion,
     file.path(out_dir, "R1_MASTER_COMPLETE.json"),
     pretty = TRUE,
     auto_unbox = TRUE
   )
-} else {
+}
+if (!has_jsonlite) {
   dput(completion, file = file.path(out_dir, "R1_MASTER_COMPLETE.R"))
 }
 
