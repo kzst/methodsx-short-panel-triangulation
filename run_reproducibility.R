@@ -72,9 +72,23 @@ py <- asset_python()
 ensure_asset_dependencies(py)
 
 if (mode == "full") {
-  needed <- c("run_R1_validation.R", "run_R1_targeted_checks.R")
+  needed <- c("run_R1_validation.R", "run_R1_targeted_checks.R", file.path("R", "r1_benchmarks.R"))
   missing <- needed[!file.exists(needed)]
   if (length(missing)) stop("Full R1 checkout is incomplete. Missing: ", paste(missing, collapse = ", "))
+
+  # Fail fast before any expensive Monte Carlo work if an R driver is not
+  # syntactically valid. This catches packaging/editing errors immediately.
+  parse_expr <- paste0(
+    "for (f in c(",
+    paste(sprintf("'%s'", gsub("'", "\\'", needed)), collapse = ","),
+    ")) { parse(file=f); cat('Parsed:', f, '\\n') }"
+  )
+  run_cmd(
+    file.path(R.home("bin"), "Rscript"),
+    c("-e", shQuote(parse_expr)),
+    "R driver syntax preflight"
+  )
+
   full_args <- c("run_R1_validation.R", "--mode", "full")
   if (!is.null(workers)) full_args <- c(full_args, "--workers", workers)
   if (skip_install) full_args <- c(full_args, "--skip-install")
