@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 # One-entry reproducibility driver for the MethodsX R1 branch.
+# Package revision: R1-repro-20260905-02
 #
 # Modes:
 #   assets : regenerate all manuscript tables and figures from audited outputs
@@ -19,10 +20,9 @@ if (!mode %in% c("assets", "quick", "full")) stop("--mode must be assets, quick,
 
 root <- normalizePath(".", mustWork = TRUE)
 revision_file <- file.path(root, "R1_PACKAGE_REVISION.txt")
-revision <- if (file.exists(revision_file)) {
-  trimws(readLines(revision_file, n = 1L, warn = FALSE))
-} else {
-  "UNMARKED_OR_STALE_PACKAGE"
+revision <- "UNMARKED_OR_STALE_PACKAGE"
+if (file.exists(revision_file)) {
+  revision <- trimws(readLines(revision_file, n = 1L, warn = FALSE))
 }
 message("Repository root: ", root)
 message("R1 package revision: ", revision)
@@ -52,10 +52,9 @@ asset_python <- function() {
       unset = file.path("~", ".cache", "grav_methodsx_r1", "venv")
     )
   )
-  venv_python <- if (.Platform$OS.type == "windows") {
-    file.path(venv_dir, "Scripts", "python.exe")
-  } else {
-    file.path(venv_dir, "bin", "python")
+  venv_python <- file.path(venv_dir, "bin", "python")
+  if (.Platform$OS.type == "windows") {
+    venv_python <- file.path(venv_dir, "Scripts", "python.exe")
   }
   if (!file.exists(venv_python)) {
     if (skip_install) stop("Isolated Python environment missing at ", venv_dir, "; rerun without --skip-install or create it manually.")
@@ -90,7 +89,8 @@ ensure_asset_dependencies <- function(py) {
         c("-m", "pip", "install", "-r", req),
         "install manuscript-asset Python dependencies"
       )
-    } else {
+    }
+    if (!file.exists(req)) {
       run_cmd(
         py,
         c("-m", "pip", "install", "numpy>=1.26", "pandas>=2.2", "matplotlib>=3.8"),
@@ -109,8 +109,6 @@ build_assets <- function(py) {
   )
 }
 
-# In full mode, validate the R entry points before creating/installing anything
-# expensive. This also makes stale ZIPs obvious from their console output.
 if (mode == "full") {
   needed <- c(
     "run_R1_validation.R",
@@ -120,16 +118,17 @@ if (mode == "full") {
   missing <- needed[!file.exists(needed)]
   if (length(missing)) stop("Full R1 checkout is incomplete. Missing: ", paste(missing, collapse = ", "))
 
-  parse_expr <- paste0(
-    "for (f in c(",
-    paste(sprintf("'%s'", gsub("'", "\\'", needed)), collapse = ","),
-    ")) { parse(file=f); cat('Parsed:', f, '\\n') }"
-  )
-  run_cmd(
-    file.path(R.home("bin"), "Rscript"),
-    c("-e", shQuote(parse_expr)),
-    "R driver syntax preflight"
-  )
+  message("START: R driver syntax preflight")
+  for (f in needed) {
+    tryCatch(
+      parse(file = f),
+      error = function(e) {
+        stop("R syntax preflight failed for ", f, ": ", conditionMessage(e), call. = FALSE)
+      }
+    )
+    message("Parsed: ", f)
+  }
+  message("PASS: R driver syntax preflight")
 }
 
 py <- asset_python()
