@@ -1,4 +1,4 @@
-R1-repro-20260905-02
+R1_v1.1-repro-20260905-01
 
-This marker identifies the reviewer-facing MethodsX R1 reproducibility package.
-A fresh GitHub ZIP from the R1 branch must contain this file.
+This marker identifies the reviewer-facing MethodsX R1_v1.1 reproducibility package.
+A fresh GitHub ZIP from the R1_v1.1 branch must contain this file.
