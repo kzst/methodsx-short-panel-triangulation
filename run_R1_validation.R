@@ -50,8 +50,11 @@ run_cmd <- function(command, args = character(), label = command) {
 }
 
 workers <- opt$workers
-if (is.null(workers) || identical(workers, "auto")) workers <- max(1L, parallel::detectCores(logical = TRUE) - 1L)
-else workers <- max(1L, as.integer(workers))
+if (is.null(workers) || identical(workers, "auto")) {
+  workers <- max(1L, parallel::detectCores(logical = TRUE) - 1L)
+} else {
+  workers <- max(1L, as.integer(workers))
+}
 
 log_msg("Configuration: ", normalizePath(opt$config, mustWork = TRUE))
 log_msg("Mode: ", opt$mode, "; workers: ", workers, "; output: ", out_dir)
@@ -63,7 +66,9 @@ if (length(missing_r)) {
   if (isTRUE(cfg$execution$auto_install_r_packages) && !opt$skip_install) {
     log_msg("Installing missing R packages: ", paste(missing_r, collapse = ", "))
     install.packages(missing_r, repos = "https://cloud.r-project.org", dependencies = TRUE)
-  } else stop("Missing R packages: ", paste(missing_r, collapse = ", "))
+  } else {
+    stop("Missing R packages: ", paste(missing_r, collapse = ", "))
+  }
 }
 missing_r <- required_r[!vapply(required_r, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing_r)) stop("R dependency installation incomplete: ", paste(missing_r, collapse = ", "))
@@ -101,7 +106,9 @@ py_ok <- system2(python, c("-c", shQuote(python_check)), stdout = FALSE, stderr 
 if (!py_ok) {
   if (isTRUE(cfg$execution$auto_install_python_packages) && !opt$skip_install) {
     run_cmd(python, c("-m", "pip", "install", "-r", "python/requirements_R1.txt"), "install Python R1 dependencies in isolated virtual environment")
-  } else stop("Missing Python dependencies in the isolated R1 virtual environment. See python/requirements_R1.txt")
+  } else {
+    stop("Missing Python dependencies in the isolated R1 virtual environment. See python/requirements_R1.txt")
+  }
 }
 run_cmd(python, c("-c", shQuote(python_check)), "Python dependency preflight")
 writeLines(capture.output(sessionInfo()), file.path(out_dir, "sessionInfo_R1.txt"))
@@ -138,6 +145,14 @@ completion <- list(
   python = python,
   python_venv = normalizePath(venv_dir, mustWork = TRUE)
 )
-if (requireNamespace("jsonlite", quietly = TRUE)) jsonlite::write_json(completion, file.path(out_dir, "R1_MASTER_COMPLETE.json"), pretty = TRUE, auto_unbox = TRUE)
-else dput(completion, file = file.path(out_dir, "R1_MASTER_COMPLETE.R"))
+if (requireNamespace("jsonlite", quietly = TRUE)) {
+  jsonlite::write_json(
+    completion,
+    file.path(out_dir, "R1_MASTER_COMPLETE.json"),
+    pretty = TRUE,
+    auto_unbox = TRUE
+  )
+} else {
+  dput(completion, file = file.path(out_dir, "R1_MASTER_COMPLETE.R"))
+}
 log_msg("R1 validation workflow completed. No manuscript file was modified.")
