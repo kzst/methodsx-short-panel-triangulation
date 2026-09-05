@@ -1,0 +1,5 @@
+R1_v1.1 READY
+Package revision: R1_v1.1-repro-20260905-01
+Branch: R1_v1.1
+
+If this file is present in a downloaded ZIP, the ZIP was created from the new R1_v1.1 branch state.
