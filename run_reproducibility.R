@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-# One-entry reproducibility driver for the MethodsX R1 branch.
-# Package revision: R1-repro-20260905-02
+# One-entry reproducibility driver for the MethodsX R1_v1.1 branch.
+# Package revision: R1_v1.1-repro-20260905-01
 #
 # Modes:
 #   assets : regenerate all manuscript tables and figures from audited outputs
@@ -19,10 +19,18 @@ for (i in seq_along(args)) {
 if (!mode %in% c("assets", "quick", "full")) stop("--mode must be assets, quick, or full")
 
 root <- normalizePath(".", mustWork = TRUE)
+expected_revision <- "R1_v1.1-repro-20260905-01"
 revision_file <- file.path(root, "R1_PACKAGE_REVISION.txt")
-revision <- "UNMARKED_OR_STALE_PACKAGE"
-if (file.exists(revision_file)) {
-  revision <- trimws(readLines(revision_file, n = 1L, warn = FALSE))
+branch_marker <- file.path(root, "R1_V1_1_READY.txt")
+if (!file.exists(revision_file)) {
+  stop("This checkout is not the R1_v1.1 reviewer package: missing R1_PACKAGE_REVISION.txt", call. = FALSE)
+}
+if (!file.exists(branch_marker)) {
+  stop("This checkout is not the R1_v1.1 reviewer package: missing R1_V1_1_READY.txt", call. = FALSE)
+}
+revision <- trimws(readLines(revision_file, n = 1L, warn = FALSE))
+if (!identical(revision, expected_revision)) {
+  stop("Unexpected package revision: ", revision, "; expected ", expected_revision, call. = FALSE)
 }
 message("Repository root: ", root)
 message("R1 package revision: ", revision)
